@@ -16,12 +16,19 @@ export default async function LoginPage() {
     <main className="mx-auto flex min-h-screen w-full max-w-sm flex-col justify-center gap-6 p-6">
       <h1 className="text-2xl font-semibold">Entrar</h1>
       <LoginForm />
-      <p className="text-sm">
-        Não tem conta?{" "}
-        <Link href="/cadastro" className="underline">
-          Criar conta
-        </Link>
-      </p>
+      <div className="flex flex-col gap-2 text-sm">
+        <p>
+          <Link href="/recuperar-senha" className="underline">
+            Esqueci minha senha
+          </Link>
+        </p>
+        <p>
+          Não tem conta?{" "}
+          <Link href="/cadastro" className="underline">
+            Criar conta
+          </Link>
+        </p>
+      </div>
     </main>
   );
 }

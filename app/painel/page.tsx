@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { getCurrentUser, type UserRole } from "@/lib/supabase/auth/get-user";
+import { getCurrentUser, type UserRole } from "@/lib/auth/get-user";
 import { logout } from "./actions";
 
 const ROLE_LABELS: Record<UserRole, string> = {
