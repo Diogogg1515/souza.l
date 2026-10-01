@@ -1,20 +1,48 @@
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { getCurrentUser, type UserRole } from "@/lib/supabase/auth/get-user";
 import { logout } from "./actions";
 
+const ROLE_LABELS: Record<UserRole, string> = {
+  client: "Cliente",
+  worker: "Trabalhador",
+  admin: "Administrador",
+};
+
 export default async function PainelPage() {
-  const supabase = await createClient();
-  const { data } = await supabase.auth.getClaims();
+  const user = await getCurrentUser();
 
   // Segunda verificação, além do proxy: nunca dependa de uma barreira só.
-  if (!data?.claims) {
+  if (!user) {
     redirect("/login");
   }
+
+  const { profile } = user;
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-sm flex-col justify-center gap-4 p-6">
       <h1 className="text-2xl font-semibold">Painel</h1>
-      <p>Você está logado como {String(data.claims.email ?? "")}.</p>
+
+      {profile ? (
+        <div className="flex flex-col gap-1">
+          <p>
+            Olá, <strong>{profile.name}</strong>.
+          </p>
+          <p>Tipo de conta: {ROLE_LABELS[profile.role]}</p>
+          {profile.role === "client" && profile.clientCode && (
+            <p>
+              Seu código de cliente:{" "}
+              <strong className="font-mono tracking-wider">
+                {profile.clientCode}
+              </strong>
+            </p>
+          )}
+        </div>
+      ) : (
+        <p className="text-sm text-red-600">
+          Sua conta ainda não tem um perfil. Saia e entre novamente, ou fale
+          com o administrador.
+        </p>
+      )}
 
       <form action={logout}>
         <button
