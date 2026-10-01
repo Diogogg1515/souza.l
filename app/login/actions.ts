@@ -18,6 +18,8 @@ export async function login(
   const { error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
+    // Aparece só no terminal do servidor, nunca para o usuário.
+    console.error("Erro de login:", error.code, error.message);
     // Mensagem genérica de propósito: não revela se o e-mail existe.
     return { error: "E-mail ou senha incorretos." };
   }
