@@ -35,9 +35,10 @@ export async function signup(
   });
 
   if (error) {
-    // Mensagem genérica de propósito: não revela se o e-mail já existe.
+    // Continua sem revelar se o e-mail existe, mas orienta quem já tem conta.
     return {
-      error: "Não foi possível criar a conta. Confira os dados e tente novamente.",
+      error:
+        "Não foi possível criar a conta. Se você já tem cadastro com esse e-mail, tente entrar.",
       info: null,
     };
   }
