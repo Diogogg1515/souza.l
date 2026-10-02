@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getCurrentUser, type UserRole } from "@/lib/auth/get-user";
 import { logout } from "./actions";
@@ -35,6 +36,18 @@ export default async function PainelPage() {
                 {profile.clientCode}
               </strong>
             </p>
+          )}
+
+          {/* Atalhos por papel (a proteção real está dentro de cada página). */}
+          {(profile.role === "worker" || profile.role === "admin") && (
+            <Link href="/clientes" className="underline">
+              Clientes
+            </Link>
+          )}
+          {profile.role === "admin" && (
+            <Link href="/admin" className="underline">
+              Administração
+            </Link>
           )}
         </div>
       ) : (
