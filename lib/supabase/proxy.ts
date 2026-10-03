@@ -3,7 +3,14 @@ import { NextResponse, type NextRequest } from "next/server";
 
 // Rotas que qualquer pessoa pode abrir, sem estar logada.
 // Mantenha esta lista curta: tudo que não estiver aqui exige login.
-const PUBLIC_ROUTES = ["/", "/login", "/cadastro", "/recuperar-senha", "/auth"];
+const PUBLIC_ROUTES = [
+  "/",
+  "/login",
+  "/cadastro",
+  "/recuperar-senha",
+  "/auth",
+  "/p",
+];
 
 function isPublicRoute(pathname: string) {
   return PUBLIC_ROUTES.some(
