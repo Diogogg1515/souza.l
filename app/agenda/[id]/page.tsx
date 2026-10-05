@@ -3,16 +3,12 @@ import { notFound } from "next/navigation";
 import { requireRole } from "@/lib/auth/require-role";
 import { getVisit } from "@/lib/agenda/visits";
 import { dayKey, formatDayLabel, formatTime } from "@/lib/agenda/time";
+import { whatsappNumber } from "@/lib/agenda/phone";
 import { VisitStatusDot } from "@/components/agenda/visit-status-dot";
 import { answerVisit, deleteVisit } from "../actions";
 import { RescheduleForm } from "./reschedule-form";
 
 type Props = { params: Promise<{ id: string }> };
-
-// WhatsApp precisa do código do país: se o número tem só DDD + telefone, soma o 55.
-function whatsappNumber(digits: string): string {
-  return digits.length <= 11 ? `55${digits}` : digits;
-}
 
 export default async function VisitaPage({ params }: Props) {
   await requireRole(["worker"]);
@@ -86,6 +82,21 @@ export default async function VisitaPage({ params }: Props) {
             </button>
           </form>
         </section>
+      )}
+
+      {visit.serviceId ? (
+        <p className="rounded-lg bg-green-50 p-3 text-sm text-green-900">
+          Esta visita virou serviço.
+        </p>
+      ) : (
+        visit.status === "done" && (
+          <Link
+            href={`/pedidos/novo?visita=${visit.id}`}
+            className="flex h-12 items-center justify-center rounded-lg bg-gray-900 text-base font-medium text-white"
+          >
+            Virou serviço? Enviar convite
+          </Link>
+        )
       )}
 
       <a

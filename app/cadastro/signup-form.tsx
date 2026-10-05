@@ -8,11 +8,13 @@ const initialState: SignupState = { error: null, info: null };
 const inputClass =
   "h-12 rounded-lg border border-gray-300 px-3 text-base text-gray-900";
 
-export function SignupForm() {
+export function SignupForm({ next }: { next: string }) {
   const [state, formAction, pending] = useActionState(signup, initialState);
 
   return (
     <form action={formAction} className="flex flex-col gap-4">
+      <input type="hidden" name="next" value={next} />
+
       <div className="flex flex-col gap-1">
         <label htmlFor="name" className="text-sm font-medium">Nome</label>
         <input id="name" name="name" type="text" autoComplete="name" required maxLength={100} className={inputClass} />

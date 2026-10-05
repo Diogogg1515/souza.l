@@ -14,9 +14,11 @@ type Row = {
   scheduled_at: string;
   notes: string | null;
   status: VisitStatus;
+  service_id: string | null;
 };
 
-const COLUMNS = "id, client_name, phone, address, scheduled_at, notes, status";
+const COLUMNS =
+  "id, client_name, phone, address, scheduled_at, notes, status, service_id";
 
 function toVisit(row: Row): Visit {
   return {
@@ -27,6 +29,7 @@ function toVisit(row: Row): Visit {
     scheduledAt: row.scheduled_at,
     notes: row.notes,
     status: row.status,
+    serviceId: row.service_id,
   };
 }
 

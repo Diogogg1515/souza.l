@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { safeNext } from "@/lib/auth/safe-next";
 
 export type SignupState = { error: string | null; info: string | null };
 
@@ -13,6 +14,7 @@ export async function signup(
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
   const confirm = String(formData.get("confirm") ?? "");
+  const next = safeNext(formData.get("next"));
 
   if (name.length < 2 || name.length > 100) {
     return { error: "Informe seu nome (entre 2 e 100 caracteres).", info: null };
@@ -51,5 +53,5 @@ export async function signup(
     };
   }
 
-  redirect("/painel");
+  redirect(next);
 }

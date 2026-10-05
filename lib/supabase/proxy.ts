@@ -10,6 +10,7 @@ const PUBLIC_ROUTES = [
   "/recuperar-senha",
   "/auth",
   "/p",
+  "/convite",
 ];
 
 function isPublicRoute(pathname: string) {

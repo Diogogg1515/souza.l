@@ -8,4 +8,5 @@ export type Visit = {
   scheduledAt: string; // data e hora em formato ISO (UTC)
   notes: string | null;
   status: VisitStatus;
+  serviceId: string | null; // preenchido quando a visita vira serviço
 };

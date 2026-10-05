@@ -3,11 +3,13 @@
 import { useActionState } from "react";
 import { login } from "./actions";
 
-export function LoginForm() {
+export function LoginForm({ next }: { next: string }) {
   const [state, formAction, pending] = useActionState(login, { error: null });
 
   return (
     <form action={formAction} className="flex flex-col gap-4">
+      <input type="hidden" name="next" value={next} />
+
       <div className="flex flex-col gap-1">
         <label htmlFor="email" className="text-sm font-medium">
           E-mail

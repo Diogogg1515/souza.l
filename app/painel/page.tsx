@@ -2,9 +2,11 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getCurrentUser, type UserRole } from "@/lib/auth/get-user";
 import { listVisits, pendingQuestions } from "@/lib/agenda/visits";
+import { listMyServices } from "@/lib/services/list";
 import { dayKey, formatTime } from "@/lib/agenda/time";
 import { VisitQuestion } from "@/components/agenda/visit-question";
 import { VisitStatusDot } from "@/components/agenda/visit-status-dot";
+import { ServiceList } from "@/components/services/service-list";
 import { logout } from "./actions";
 
 const ROLE_LABELS: Record<UserRole, string> = {
@@ -13,7 +15,9 @@ const ROLE_LABELS: Record<UserRole, string> = {
   admin: "Administrador",
 };
 
-export default async function PainelPage() {
+type Props = { searchParams: Promise<{ aceito?: string }> };
+
+export default async function PainelPage({ searchParams }: Props) {
   const user = await getCurrentUser();
 
   // Segunda verificação, além do proxy: nunca dependa de uma barreira só.
@@ -21,18 +25,34 @@ export default async function PainelPage() {
     redirect("/login");
   }
 
+  const { aceito } = await searchParams;
   const { profile } = user;
-  const isWorker = profile?.role === "worker";
+  const role = profile?.role;
+  const isWorker = role === "worker";
+  const isClient = role === "client";
 
   // A agenda é só do profissional (o banco também garante isso).
   const visits = isWorker ? await listVisits() : [];
   const pending = pendingQuestions(visits);
   const today = dayKey(Date.now());
-  const todayVisits = visits.filter((visit) => dayKey(visit.scheduledAt) === today);
+  const todayVisits = visits.filter(
+    (visit) => dayKey(visit.scheduledAt) === today,
+  );
+
+  const services = isWorker || isClient ? await listMyServices() : [];
 
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-md flex-col gap-6 px-5 py-10">
       <h1 className="text-2xl font-semibold">Painel</h1>
+
+      {aceito === "1" && (
+        <p
+          role="status"
+          className="rounded-lg bg-green-50 p-3 text-sm text-green-900"
+        >
+          Serviço criado! O profissional foi avisado.
+        </p>
+      )}
 
       {profile ? (
         <div className="flex flex-col gap-1">
@@ -40,7 +60,7 @@ export default async function PainelPage() {
             Olá, <strong>{profile.name}</strong>.
           </p>
           <p>Tipo de conta: {ROLE_LABELS[profile.role]}</p>
-          {profile.role === "client" && profile.clientCode && (
+          {isClient && profile.clientCode && (
             <p>
               Seu código de cliente:{" "}
               <strong className="font-mono tracking-wider">
@@ -95,17 +115,33 @@ export default async function PainelPage() {
             >
               Agenda de orçamentos
             </Link>
+            <Link
+              href="/pedidos/novo"
+              className="flex h-12 items-center justify-center rounded-lg border border-gray-900 text-base font-medium"
+            >
+              Novo pedido
+            </Link>
+            <Link href="/convites" className="text-center text-sm underline">
+              Meus convites
+            </Link>
           </section>
         </>
       )}
 
+      {(isWorker || isClient) && (
+        <ServiceList
+          title={isWorker ? "Serviços" : "Meus serviços"}
+          services={services}
+        />
+      )}
+
       {/* Atalhos por papel (a proteção real está dentro de cada página). */}
-      {(profile?.role === "worker" || profile?.role === "admin") && (
+      {(role === "worker" || role === "admin") && (
         <Link href="/clientes" className="underline">
           Clientes
         </Link>
       )}
-      {profile?.role === "admin" && (
+      {role === "admin" && (
         <Link href="/admin" className="underline">
           Administração
         </Link>
