@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { TOKEN_PATTERN } from "@/lib/invites/invites";
+import { isUuid } from "@/lib/agenda/form";
 
 export type AcceptState = { error: string | null };
 
@@ -39,7 +40,7 @@ export async function acceptInvite(
   }
 
   const supabase = await createClient();
-  const { error } = await supabase.rpc("redeem_service_invite", {
+  const { data, error } = await supabase.rpc("redeem_service_invite", {
     p_token: token,
     p_address: address,
   });
@@ -50,5 +51,6 @@ export async function acceptInvite(
     return { error: friendlyMessage(error.message) };
   }
 
-  redirect("/painel?aceito=1");
+  const serviceId = String(data ?? "");
+  redirect(isUuid(serviceId) ? `/servicos/${serviceId}?novo=1` : "/painel?aceito=1");
 }
